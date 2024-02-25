@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring
+  template:
+    metadata:
+      labels:
+        app: spring
+    spec:
+      containers:
+        - name: spring
+          image: remmo1/currency-converter-spring:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: FRONTEND.ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-config-map
+                  key: frontendAddress
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring
+spec:
+  selector:
+    app: spring
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
